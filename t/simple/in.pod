@@ -1,0 +1,25 @@
+=pod
+
+=aliasInc src src.pod
+
+=aliasInc tmod Test::Module
+
+con1
+
+=include test@src.pod
+
+con2
+
+=include cont@src
+
+con3
+
+=include opts@Test::Module
+
+con4
+
+=tmpl inIN
+
+Chunk from F<in.pod>
+
+=cut
