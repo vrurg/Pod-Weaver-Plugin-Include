@@ -3,9 +3,7 @@ package Pod::Elemental::Transformer::Include::Finder;
 
 # ABSTRACT: Finds source PODs in .pod files or modules.
 
-=head1
-
-=SYNOPSIS
+=head1 SYNOPSIS
 
     use Pod::Elemental::Transformer::Include::Finder;
     
@@ -17,7 +15,7 @@ package Pod::Elemental::Transformer::Include::Finder;
     
 =head1 DESCRIPTION
 
-This module loads sources, parses them and caches found templates.
+This module loads sources, parses them and caches templates found.
 
 =cut
 

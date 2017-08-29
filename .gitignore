@@ -35,3 +35,4 @@ inc/
 /*.zip
 
 Pod-Weaver-Plugin-Include.komodoproject
+/Pod-Weaver-Plugin-Include*
