@@ -1,6 +1,8 @@
 #
 package Pod::Elemental::Transformer::Include::Finder;
 
+our $VERSION = 'v0.1.900';
+
 # ABSTRACT: Finds source PODs in .pod files or modules.
 
 =head1 SYNOPSIS
@@ -34,6 +36,7 @@ sources by their full file names; and second level keys are template names.
 Each cache entry is an array of POD nodes.
 
 =cut
+
 has cache => (
     is      => 'rw',
     isa     => 'HashRef[HashRef]',
@@ -51,6 +54,7 @@ or what is used with a C<=include> command. For example:
 With these commands the map will contain keys I<alias> and I<templates/src.pod>.    
 
 =cut
+
 has maps => (
     is      => 'rw',
     isa     => 'HashRef[Str]',
@@ -63,6 +67,7 @@ has maps => (
 Back reference to a L<Pod::Weaver::Plugin::Include> instance.
 
 =cut
+
 has callerPlugin => (
     is  => 'ro',
     isa => 'Pod::Weaver::Plugin::Include',
@@ -73,6 +78,7 @@ has callerPlugin => (
 List of entries from C<pod_path> configuration variable.
 
 =cut
+
 has pod_path => (
     is      => 'rw',
     lazy    => 1,
@@ -85,6 +91,7 @@ has pod_path => (
 Solely for use by C<load_file()> and C<_store_template()> methods.
 
 =cut
+
 has _tmplSource => (
     is      => 'rw',
     clearer => '_clear_tmplSource',
@@ -113,6 +120,7 @@ I<undef> if not found.
 Successful search is stored into C<maps> attribute.
 
 =cut
+
 sub find_source {
     my $this = shift;
     my ($source) = @_;
@@ -137,6 +145,7 @@ and one for the C<$alias>.
 Returns full path name of the C<$source>.
 
 =cut
+
 sub register_alias {
     my $this = shift;
     my ( $alias, $source ) = @_;
@@ -155,6 +164,7 @@ sub register_alias {
 Records a new template into the C<cache>.
 
 =cut
+
 sub _store_template {
     my $this = shift;
 
@@ -184,6 +194,7 @@ Template name.
 =back
 
 =cut
+
 sub parse_tmpl {
     my $this = shift;
     my $str  = shift;
@@ -199,6 +210,7 @@ sub parse_tmpl {
                     ([\p{XPosixAlnum}_])*
                 )
                 \s*$
+## Please see file perltidy.ERR
             /xn;
 
         if ( $+{name} ) {
@@ -222,6 +234,7 @@ C<cache>.
 Returns I<true> if file has been successully read by L<Pod::Elemental>.
 
 =cut
+
 sub load_file {
     my $this = shift;
     my ( $file, %opts ) = @_;
@@ -289,6 +302,7 @@ If a template is missing in the C<cache> then tries to C<load_file()>.
 Returns I<undef> if failed.
 
 =cut
+
 sub get_template {
     my $this = shift;
     my %opts = @_;
