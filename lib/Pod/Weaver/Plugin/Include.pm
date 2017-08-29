@@ -490,6 +490,13 @@ package Pod::Weaver::Plugin::Include::Transformer {
         my $this = shift;
         return $this->callerPlugin->logger;
     }
+
+    __PACKAGE__->meta->make_immutable;
+    no Moose;
+
 }
+
+__PACKAGE__->meta->make_immutable;
+no Moose;
 
 1;
