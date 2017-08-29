@@ -344,4 +344,7 @@ sub init_pod_path {
       : [qw<./lib>];
 }
 
+__PACKAGE__->meta->make_immutable;
+no Moose;
+
 1;

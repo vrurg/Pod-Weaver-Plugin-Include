@@ -225,7 +225,7 @@ resulting POD with I<POD INCLUDE ERROR:> prefix.
 
 =head2 Configuration variables
 
-=over4
+=over 4
 
 =item B<pod_path>
 
@@ -473,6 +473,13 @@ package Pod::Elemental::Transformer::Include {
         my $this = shift;
         return $this->callerPlugin->logger;
     }
+
+    __PACKAGE__->meta->make_immutable;
+    no Moose;
+
 }
+
+__PACKAGE__->meta->make_immutable;
+no Moose;
 
 1;
