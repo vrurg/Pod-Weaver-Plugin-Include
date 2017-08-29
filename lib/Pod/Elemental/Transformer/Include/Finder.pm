@@ -1,7 +1,7 @@
 #
 package Pod::Elemental::Transformer::Include::Finder;
 
-our $VERSION = 'v0.1.900';
+our $VERSION = 'v0.1.901';
 
 # ABSTRACT: Finds source PODs in .pod files or modules.
 

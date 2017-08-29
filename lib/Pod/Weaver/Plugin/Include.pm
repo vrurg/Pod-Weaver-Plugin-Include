@@ -3,7 +3,7 @@ use warnings;
 
 package Pod::Weaver::Plugin::Include;
 
-our $VERSION = 'v0.1.900';
+our $VERSION = 'v0.1.901';
 
 # ABSTRACT: Support for including sections of POD from other files
 
