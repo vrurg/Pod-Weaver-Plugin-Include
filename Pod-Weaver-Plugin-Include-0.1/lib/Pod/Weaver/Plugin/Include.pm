@@ -5,239 +5,6 @@ package Pod::Weaver::Plugin::Include;
 
 # ABSTRACT: Support for including sections of POD from other files
 
-=head1 SYNOPSIS
-
-    # weaver.ini
-    [-Include]
-    pod_path = lib:bin:docs/pod
-    insert_errors = 0
-    
-=head1 DESCRIPTION
-
-This is a L<Pod::Weaver> plugin for making it possible to include segments of
-POD documentation being included from one file into another. This is useful when
-one has a piece of documentation which is nice to have included into a couple of
-documentations. So, instead of telling a user to 'go see this info in I<that>
-file' one could simply have this info included from I<that> file into I<this>
-file.
-
-For example, let's say we have a script C<useful_tool> which is handling its
-command line processing to a module C<Core>. In turn, the module gathers
-information about standard command line options from modules C<Core::Mod1>,
-C<Core::Mod2>, etc. So far, so good until one writes another script
-C<noless_useful>, which is based upon the module C<Core> too. Yet, even worse –
-it adds its own command lines the list gathered by C<Core>! With standard POD
-documentation for the common set of options would have to be copy-pasted into
-each script documentation. For the latter one it's own options must be included.
-And then if any documentation would be changed in the original modules we would
-have not forget update both scripts' docs too!
-
-Phew...
-
-C<Pod::Weaver::Plugin::Include> solves the issue by defining a concept of
-template (borrowed from archaic L<Pod::Template>) and allowing a template to be
-included by a third-party pod:
-
-    # File lib/Core/Mod1.pm
-    package Core::Mod1;
-     
-    ...
-    
-    # Template options won't be included into resulting POD.
-    =pod
-    
-    Here we define command line options for later use by calling module.
-     
-    =tmpl -options
-    
-    =item B<--option1>
-    
-    document it
-    
-    =item B<--option2>
-    
-    repeat
-    
-    =cut
-    
-    1;
-    __END__
-    
-    
-    
-    # File lib/Core/Mod2.pm
-    package Core::Mod2
-    
-    =head1 Options
-    
-    Here is the options we declare in this module:
-    
-    =over 4
-    
-    =tmpl options
-    
-    =item B<--file=>I<source_file>
-    
-    Whatever it means.
-    
-    =item B<--ignore-something>
-    
-    ... we'll document it. Some day...
-    
-    =tmpl
-    
-    =back
-    
-    You will find these in your script documentation too.
-    
-    =cut
-    
-    1;
-    __END__
-    
-    
-    
-    # File lib/Core.pm
-    package Core;
-    
-    =pod
-    
-    =srcAlias mod2opts Core/Mod2.pm
-    
-    =tmpl coreOpts
-    
-    =over 4
-    
-    =item B<--help>
-    
-    Display this help
-    
-    =include options@Core::Mod1
-    
-    =include options@mod2opts
-    
-    =cut
-    
-    1;
-    __END__
-    
-Now, after processing this code by C<Include> plugin, resulting F<lib/Core.pm>
-documentation will contain options from both C<Core::Mod1> and C<Core::Mod2>.
-Yet, the C<noless_useful> script would has the following section in its
-documentation:
-
-    # File: noless_useful
-    
-    =head1 OPTIONS
-    
-    =over 4
-    
-    include coreOpts@Core
-    
-    =item B<--script-opt>
-    
-    This is added by the script code
-    
-    =back
-    
-    =cut
-    
-and this section will have all the options defined by the modules plus what
-is been added by the script itself.
-
-=head2 Syntax
-
-Three POD commands are added by this plugin:
-
-    =tmpl [[-]tmplName]
-    =srcAlias alias source
-    =include tmplName@source
-
-=over 4
-
-=item B<=tmpl>
-
-Declares a template if I<tmplName> is defined. Prefixing the name with a dash
-tells the plugin that template body is 'hidden' and must not be included into
-enclosing documentation and will only be visible as a result of C<=include>
-command.
-
-Template's name must start with either a alpha char or underscore (C<_>) and
-continued with alpha-numeric or underscore.
-
-A template body is terminated either by another C<=tmpl> command or by C<=cut>.
-If C<=tmpl> doesn't have a name defined then it acts as a terminating command
-only. For example:
-
-    =head1 SECTION
-    
-    Section docs...
-    
-    =tmpl tmpl1
-    
-    Template 1
-    
-    =tmpl -tmpl2
-    
-    Template 2
-    
-    =tmpl
-    
-    Some more docs
-    
-    =tmpl -tmpl3
-    
-    Template 3
-    
-    =cut
-    
-The above code declares three templates of which I<tmpl2> and I<tmpl3> are
-hidden and I<tmpl1> is included into the resulting POD. The I<"Some more docs">
-paragraph is not a part of any template.
-
-=item B<=srcAlias> 
-
-Defines an alias for a source. The source could be either a file name or a
-module name.
-
-    =srcAlias mod1 Some::Very::Long::Module::Name1
-    =srcAlias aPodFile pod/templates/some.pod
-
-=item B<=include>
-
-This command tries to locate a template defined by name I<tmplName> in a source
-defined by either a file name, a module name, or by an alias and include it into
-the output.
-
-Missing template is an "Error Case" (see below).
-
-=back
-
-=head2 Error Cases
-
-Plugin does its best as to not abort the building process. Errors are ignored
-and only error messages are logged. But some error reports could be included
-into generated pod if C<insert_errors> option is set to I<true> in
-F<weaver.ini>. In this case the error message is also inserted into the
-resulting POD with I<POD INCLUDE ERROR:> prefix.
-
-=head2 Configuration variables
-
-=over4
-
-=item B<pod_path>
-
-Semicolon-separated list of directories to search for template sources.
-
-Default: I<lib>
-
-=item B<insert_errors>
-
-Insert some error message into the resulting POD.
-
-=back
-    
-=cut
 
 use Moose;
 use namespace::autoclean;
@@ -474,3 +241,263 @@ package Pod::Elemental::Transformer::Include {
 }
 
 1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Pod::Weaver::Plugin::Include - Support for including sections of POD from other files
+
+=head1 VERSION
+
+version 0.1
+
+=head1 SYNOPSIS
+
+    # weaver.ini
+    [-Include]
+    pod_path = lib:bin:docs/pod
+    insert_errors = 0
+
+=head1 DESCRIPTION
+
+This is a L<Pod::Weaver> plugin for making it possible to include segments of
+POD documentation being included from one file into another. This is useful when
+one has a piece of documentation which is nice to have included into a couple of
+documentations. So, instead of telling a user to 'go see this info in I<that>
+file' one could simply have this info included from I<that> file into I<this>
+file.
+
+For example, let's say we have a script C<useful_tool> which is handling its
+command line processing to a module C<Core>. In turn, the module gathers
+information about standard command line options from modules C<Core::Mod1>,
+C<Core::Mod2>, etc. So far, so good until one writes another script
+C<noless_useful>, which is based upon the module C<Core> too. Yet, even worse –
+it adds its own command lines the list gathered by C<Core>! With standard POD
+documentation for the common set of options would have to be copy-pasted into
+each script documentation. For the latter one it's own options must be included.
+And then if any documentation would be changed in the original modules we would
+have not forget update both scripts' docs too!
+
+Phew...
+
+C<Pod::Weaver::Plugin::Include> solves the issue by defining a concept of
+template (borrowed from archaic L<Pod::Template>) and allowing a template to be
+included by a third-party pod:
+
+    # File lib/Core/Mod1.pm
+    package Core::Mod1;
+     
+    ...
+    
+    # Template options won't be included into resulting POD.
+    =pod
+    
+    Here we define command line options for later use by calling module.
+     
+    =tmpl -options
+    
+    =item B<--option1>
+    
+    document it
+    
+    =item B<--option2>
+    
+    repeat
+    
+    =cut
+    
+    1;
+    __END__
+    
+    
+    
+    # File lib/Core/Mod2.pm
+    package Core::Mod2
+    
+    =head1 Options
+    
+    Here is the options we declare in this module:
+    
+    =over 4
+    
+    =tmpl options
+    
+    =item B<--file=>I<source_file>
+    
+    Whatever it means.
+    
+    =item B<--ignore-something>
+    
+    ... we'll document it. Some day...
+    
+    =tmpl
+    
+    =back
+    
+    You will find these in your script documentation too.
+    
+    =cut
+    
+    1;
+    __END__
+    
+    
+    
+    # File lib/Core.pm
+    package Core;
+    
+    =pod
+    
+    =srcAlias mod2opts Core/Mod2.pm
+    
+    =tmpl coreOpts
+    
+    =over 4
+    
+    =item B<--help>
+    
+    Display this help
+    
+    =include options@Core::Mod1
+    
+    =include options@mod2opts
+    
+    =cut
+    
+    1;
+    __END__
+
+Now, after processing this code by C<Include> plugin, resulting F<lib/Core.pm>
+documentation will contain options from both C<Core::Mod1> and C<Core::Mod2>.
+Yet, the C<noless_useful> script would has the following section in its
+documentation:
+
+    # File: noless_useful
+    
+    =head1 OPTIONS
+    
+    =over 4
+    
+    include coreOpts@Core
+    
+    =item B<--script-opt>
+    
+    This is added by the script code
+    
+    =back
+    
+    =cut
+
+and this section will have all the options defined by the modules plus what
+is been added by the script itself.
+
+=head2 Syntax
+
+Three POD commands are added by this plugin:
+
+    =tmpl [[-]tmplName]
+    =srcAlias alias source
+    =include tmplName@source
+
+=over 4
+
+=item B<=tmpl>
+
+Declares a template if I<tmplName> is defined. Prefixing the name with a dash
+tells the plugin that template body is 'hidden' and must not be included into
+enclosing documentation and will only be visible as a result of C<=include>
+command.
+
+Template's name must start with either a alpha char or underscore (C<_>) and
+continued with alpha-numeric or underscore.
+
+A template body is terminated either by another C<=tmpl> command or by C<=cut>.
+If C<=tmpl> doesn't have a name defined then it acts as a terminating command
+only. For example:
+
+    =head1 SECTION
+    
+    Section docs...
+    
+    =tmpl tmpl1
+    
+    Template 1
+    
+    =tmpl -tmpl2
+    
+    Template 2
+    
+    =tmpl
+    
+    Some more docs
+    
+    =tmpl -tmpl3
+    
+    Template 3
+    
+    =cut
+
+The above code declares three templates of which I<tmpl2> and I<tmpl3> are
+hidden and I<tmpl1> is included into the resulting POD. The I<"Some more docs">
+paragraph is not a part of any template.
+
+=item B<=srcAlias> 
+
+Defines an alias for a source. The source could be either a file name or a
+module name.
+
+    =srcAlias mod1 Some::Very::Long::Module::Name1
+    =srcAlias aPodFile pod/templates/some.pod
+
+=item B<=include>
+
+This command tries to locate a template defined by name I<tmplName> in a source
+defined by either a file name, a module name, or by an alias and include it into
+the output.
+
+Missing template is an "Error Case" (see below).
+
+=back
+
+=head2 Error Cases
+
+Plugin does its best as to not abort the building process. Errors are ignored
+and only error messages are logged. But some error reports could be included
+into generated pod if C<insert_errors> option is set to I<true> in
+F<weaver.ini>. In this case the error message is also inserted into the
+resulting POD with I<POD INCLUDE ERROR:> prefix.
+
+=head2 Configuration variables
+
+=over4
+
+=item B<pod_path>
+
+Semicolon-separated list of directories to search for template sources.
+
+Default: I<lib>
+
+=item B<insert_errors>
+
+Insert some error message into the resulting POD.
+
+=back
+
+=head1 AUTHOR
+
+Vadim Belman <vrurg@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2017 by Vadim Belman.
+
+This is free software, licensed under:
+
+  The (three-clause) BSD License
+
+=cut

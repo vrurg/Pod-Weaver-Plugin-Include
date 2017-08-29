@@ -10,13 +10,24 @@ Module::Name - abstract text
 
 version 1.002003
 
-l1
+con1
 
-l2
+This is a test paragraph
+from src.pod
 
-l3
+This is a nested include.
 
-I<POD INCLUDE ERROR: Circular load: circ@l1.pod has been loaded previously in main>
+con2
+
+bla-bla-bla
+
+con3
+
+Test::Module options.
+
+con4
+
+Chunk from F<in.pod>
 
 =head1 AUTHOR
 

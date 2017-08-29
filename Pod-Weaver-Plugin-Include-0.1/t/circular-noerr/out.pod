@@ -16,8 +16,6 @@ l2
 
 l3
 
-I<POD INCLUDE ERROR: Circular load: circ@l1.pod has been loaded previously in main>
-
 =head1 AUTHOR
 
 Vadim Belman <vrurg@cpan.org>
