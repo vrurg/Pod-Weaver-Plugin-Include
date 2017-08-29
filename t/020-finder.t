@@ -15,7 +15,7 @@ my $finder = new_ok(
 is_deeply(
     $finder->pod_path,
     [qw<./t/simple/lib ./t/simple>],
-    "POD path attribute"
+    "Pod path attribute"
 );
 
 my $podFile = $finder->find_source("src.pod");
