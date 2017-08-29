@@ -5,7 +5,7 @@ package Pod::Weaver::Plugin::Include;
 
 our $VERSION = 'v0.1.901';
 
-# ABSTRACT: Support for including sections of POD from other files
+# ABSTRACT: Support for including sections of Pod from other files
 
 =head1 SYNOPSIS
 
@@ -17,7 +17,7 @@ our $VERSION = 'v0.1.901';
 =head1 DESCRIPTION
 
 This is a L<Pod::Weaver> plugin for making it possible to include segments of
-POD documentation being included from one file into another. This is useful when
+Pod documentation being included from one file into another. This is useful when
 one has a piece of documentation which is nice to have included into a couple of
 documentations. So, instead of telling a user to 'go see this info in I<that>
 file' one could simply have this info included from I<that> file into I<this>
@@ -28,7 +28,7 @@ command line processing to a module C<Core>. In turn, the module gathers
 information about standard command line options from modules C<Core::Mod1>,
 C<Core::Mod2>, etc. So far, so good until one writes another script
 C<noless_useful>, which is based upon the module C<Core> too. Yet, even worse –
-it adds its own command lines the list gathered by C<Core>! With standard POD
+it adds its own command lines the list gathered by C<Core>! With standard Pod
 documentation for the common set of options would have to be copy-pasted into
 each script documentation. For the latter one it's own options must be included.
 And then if any documentation would be changed in the original modules we would
@@ -45,7 +45,7 @@ included by a third-party pod:
      
     ...
     
-    # Template options won't be included into resulting POD.
+    # Template options won't be included into resulting Pod.
     =pod
     
     Here we define command line options for later use by calling module.
@@ -149,7 +149,7 @@ is been added by the script itself.
 
 =head2 Syntax
 
-Three POD commands are added by this plugin:
+Three Pod commands are added by this plugin:
 
     =tmpl [[-]tmplName]
     =srcAlias alias source
@@ -194,7 +194,7 @@ only. For example:
     =cut
     
 The above code declares three templates of which I<tmpl2> and I<tmpl3> are
-hidden and I<tmpl1> is included into the resulting POD. The I<"Some more docs">
+hidden and I<tmpl1> is included into the resulting Pod. The I<"Some more docs">
 paragraph is not a part of any template.
 
 =item B<=srcAlias> 
@@ -221,7 +221,7 @@ Plugin does its best as to not abort the building process. Errors are ignored
 and only error messages are logged. But some error reports could be included
 into generated pod if C<insert_errors> option is set to I<true> in
 F<weaver.ini>. In this case the error message is also inserted into the
-resulting POD with I<POD INCLUDE ERROR:> prefix.
+resulting Pod with I<Pod INCLUDE ERROR:> prefix.
 
 =head2 Configuration variables
 
@@ -235,7 +235,7 @@ Default: I<lib>
 
 =item B<insert_errors>
 
-Insert some error message into the resulting POD.
+Insert some error message into the resulting Pod.
 
 =back
     

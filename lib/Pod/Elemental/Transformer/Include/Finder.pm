@@ -3,7 +3,7 @@ package Pod::Elemental::Transformer::Include::Finder;
 
 our $VERSION = 'v0.1.901';
 
-# ABSTRACT: Finds source PODs in .pod files or modules.
+# ABSTRACT: Finds source Pods in .pod files or modules.
 
 =head1 SYNOPSIS
 
@@ -33,7 +33,7 @@ use namespace::autoclean;
 
 Cache of templates by sources. Hash of hashes where first level keys are
 sources by their full file names; and second level keys are template names.
-Each cache entry is an array of POD nodes.
+Each cache entry is an array of Pod nodes.
 
 =cut
 
