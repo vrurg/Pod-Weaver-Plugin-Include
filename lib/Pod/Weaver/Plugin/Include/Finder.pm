@@ -1,6 +1,8 @@
 #
 package Pod::Weaver::Plugin::Include::Finder;
 
+our $VERSION = 'v0.1.3';
+
 # ABSTRACT: Finds source Pods in .pod files or modules.
 
 =head1 SYNOPSIS
