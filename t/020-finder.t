@@ -4,10 +4,10 @@ use v5.24;
 use Test::More;
 use Data::Dumper;
 use lib qw(./lib);
-require_ok("Pod::Elemental::Transformer::Include::Finder");
+require_ok("Pod::Weaver::Plugin::Include::Finder");
 
 my $finder = new_ok(
-    "Pod::Elemental::Transformer::Include::Finder",
+    "Pod::Weaver::Plugin::Include::Finder",
     [ pod_path => [qw<./t/simple/lib ./t/simple>] ],
     "finder object"
 );
