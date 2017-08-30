@@ -1,5 +1,7 @@
 #
-package Pod::Elemental::Transformer::Include::Finder;
+package Pod::Weaver::Plugin::Include::Finder;
+
+our $VERSION = 'v0.1.4';
 
 our $VERSION = 'v0.1.901';
 
@@ -7,9 +9,9 @@ our $VERSION = 'v0.1.901';
 
 =head1 SYNOPSIS
 
-    use Pod::Elemental::Transformer::Include::Finder;
+    use Pod::Weaver::Plugin::Include::Finder;
     
-    my $finder = Pod::Elemental::Transformer::Include::Finder->new;
+    my $finder = Pod::Weaver::Plugin::Include::Finder->new;
     my $template = $finder->get_template(
         template => 'tmplName',
         source => 'source.pod',

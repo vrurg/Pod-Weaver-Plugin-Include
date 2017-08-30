@@ -280,7 +280,7 @@ sub translate_dialect {
     my $this = shift;
     my ($node) = @_;
 
-    Pod::Elemental::Transformer::Include->new( callerPlugin => $this, )
+    Pod::Weaver::Plugin::Include::Transformer->new( callerPlugin => $this, )
       ->transform_node($node);
 }
 
@@ -292,8 +292,8 @@ sub init_insert_errors {
     return 0;
 }
 
-package Pod::Elemental::Transformer::Include {
-    use Pod::Elemental::Transformer::Include::Finder;
+package Pod::Weaver::Plugin::Include::Transformer {
+    use Pod::Weaver::Plugin::Include::Finder;
 
     use Moose;
     use namespace::autoclean;
@@ -313,7 +313,7 @@ package Pod::Elemental::Transformer::Include {
     has finder => (
         is      => 'rw',
         lazy    => 1,
-        isa     => 'Pod::Elemental::Transformer::Include::Finder',
+        isa     => 'Pod::Weaver::Plugin::Include::Finder',
         builder => 'init_finder',
     );
 
@@ -465,7 +465,7 @@ package Pod::Elemental::Transformer::Include {
     sub init_finder {
         my $this = shift;
 
-        return Pod::Elemental::Transformer::Include::Finder->new(
+        return Pod::Weaver::Plugin::Include::Finder->new(
             callerPlugin => $this->callerPlugin, );
     }
 
