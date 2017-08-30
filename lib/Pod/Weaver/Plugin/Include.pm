@@ -368,9 +368,9 @@ package Pod::Weaver::Plugin::Include::Transformer {
           $params{'.included'} || {};    # Hash of already included sources.
         my $logger = $this->callerPlugin->logger;
 
-        $logger->log_debug( "Processing source "
+        $logger->log_debug( "Processing source ["
               . $curSrc
-              . " with "
+              . "] with "
               . scalar(@$children)
               . " children" )
           if defined $curSrc;

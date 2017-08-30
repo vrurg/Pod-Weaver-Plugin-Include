@@ -71,8 +71,9 @@ Back reference to a L<Pod::Weaver::Plugin::Include> instance.
 =cut
 
 has callerPlugin => (
-    is  => 'ro',
-    isa => 'Pod::Weaver::Plugin::Include',
+    is      => 'ro',
+    isa     => 'Pod::Weaver::Plugin::Include',
+    handles => [qw<log log_debug log_fatal>],
 );
 
 =attr pod_path
@@ -241,6 +242,8 @@ sub load_file {
     my $this = shift;
     my ( $file, %opts ) = @_;
 
+    $this->log_debug( "Loading file " . $file );
+
     my $doc = Pod::Elemental->read_file($file);
     if ($doc) {
         Pod::Elemental::Transformer::Pod5->new->transform_node($doc);
@@ -319,7 +322,13 @@ sub get_template {
         $fullName = $this->find_source( $opts{source} );
     }
 
+    $this->log( "Cannot find source file for [" . $opts{source} . "]" )
+      unless defined $fullName;
+
     return undef unless defined $fullName;
+
+    $this->log_debug(
+        "Found file $fullName for source [" . $opts{source} . "]" );
 
     unless ( $template = $this->cache->{$fullName}{ $opts{template} } ) {
         if ( my $doc = $this->load_file( $fullName, %opts ) ) {
