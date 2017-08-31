@@ -178,12 +178,23 @@ sub _store_template {
     my $this = shift;
 
     return unless defined $this->_tmplName;
+    
+    $this->log_debug("Caching template", $this->_tmplName);
 
     $this->cache->{ $this->_tmplSource }{ $this->_tmplName } =
       $this->_tmplContent;
 
     $this->_clear_tmplName;
     $this->_clear_tmplContent;
+}
+
+sub _add2tmpl {
+    my $this = shift;
+    my $para = shift;
+    
+    if ($this->_tmplName) {
+        push @{$this->_tmplContent}, $para;
+    }
 }
 
 =method B<parse_tmpl( $str )>
@@ -250,6 +261,8 @@ sub load_file {
 
     $this->log_debug( "Loading file " . $file );
 
+    my $showContent = 0;
+
     my $doc = Pod::Elemental->read_file($file);
     if ($doc) {
         Pod::Elemental::Transformer::Pod5->new->transform_node($doc);
@@ -261,27 +274,32 @@ sub load_file {
             my $para = $children->[$i];
             if ( $para->isa('Pod::Elemental::Element::Pod5::Command') ) {
                 if ( $para->command eq 'tmpl' ) {
+                    $this->log_debug("Closing template by =tmpl");
                     $this->_store_template;
 
                     my $attrs = $this->parse_tmpl( $para->content );
+                    $showContent = $attrs->{name} eq 'test' if $attrs->{name};
                     $this->_tmplName( $attrs->{name} ) if $attrs->{name};
                 }
                 else {
-                    push @{ $this->_tmplContent }, $para;
+                    $this->_add2tmpl($para);
                 }
                 next ELEM;
             }
             elsif ( $para->isa('Pod::Elemental::Element::Pod5::Nonpod') ) {
 
+                $this->log_debug("Closing template by nonpod node");
+
                 # If current pod segment ended – store template.
                 $this->_store_template;
             }
             elsif ( defined $this->_tmplName ) {
-                push @{ $this->_tmplContent }, $para;
+                $this->_add2tmpl($para);
             }
         }
 
         # If any template was declared at the document end.
+        $this->log_debug("Closing any remaining template");
         $this->_store_template;
         $this->_clear_tmplSource;
     }
@@ -376,6 +394,7 @@ sub init_logger {
                 ident     => '-Include::Finder',
                 to_stdout => 1,
                 log_pid   => 0,
+                debug     => 1,
             }
         );
     }
