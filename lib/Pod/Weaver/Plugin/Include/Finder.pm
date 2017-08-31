@@ -3,6 +3,8 @@ package Pod::Weaver::Plugin::Include::Finder;
 
 our $VERSION = 'v0.1.4';
 
+our $VERSION = 'v0.1.901';
+
 # ABSTRACT: Finds source Pods in .pod files or modules.
 
 =head1 SYNOPSIS
@@ -36,6 +38,7 @@ sources by their full file names; and second level keys are template names.
 Each cache entry is an array of Pod nodes.
 
 =cut
+
 has cache => (
     is      => 'rw',
     isa     => 'HashRef[HashRef]',
@@ -53,6 +56,7 @@ or what is used with a C<=include> command. For example:
 With these commands the map will contain keys I<alias> and I<templates/src.pod>.    
 
 =cut
+
 has maps => (
     is      => 'rw',
     isa     => 'HashRef[Str]',
@@ -65,6 +69,7 @@ has maps => (
 Back reference to a L<Pod::Weaver::Plugin::Include> instance.
 
 =cut
+
 has callerPlugin => (
     is  => 'ro',
     isa => 'Pod::Weaver::Plugin::Include',
@@ -75,6 +80,7 @@ has callerPlugin => (
 List of entries from C<pod_path> configuration variable.
 
 =cut
+
 has pod_path => (
     is      => 'rw',
     lazy    => 1,
@@ -82,11 +88,19 @@ has pod_path => (
     builder => 'init_pod_path',
 );
 
+has logger => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => 'init_logger',
+    handles => [qw<log log_debug log_fatal>],
+);
+
 =privAttr B<_tmplSource, _tmplName, _tmplContent>
 
 Solely for use by C<load_file()> and C<_store_template()> methods.
 
 =cut
+
 has _tmplSource => (
     is      => 'rw',
     clearer => '_clear_tmplSource',
@@ -115,6 +129,7 @@ I<undef> if not found.
 Successful search is stored into C<maps> attribute.
 
 =cut
+
 sub find_source {
     my $this = shift;
     my ($source) = @_;
@@ -139,6 +154,7 @@ and one for the C<$alias>.
 Returns full path name of the C<$source>.
 
 =cut
+
 sub register_alias {
     my $this = shift;
     my ( $alias, $source ) = @_;
@@ -157,6 +173,7 @@ sub register_alias {
 Records a new template into the C<cache>.
 
 =cut
+
 sub _store_template {
     my $this = shift;
 
@@ -186,6 +203,7 @@ Template name.
 =back
 
 =cut
+
 sub parse_tmpl {
     my $this = shift;
     my $str  = shift;
@@ -201,6 +219,7 @@ sub parse_tmpl {
                     ([\p{XPosixAlnum}_])*
                 )
                 \s*$
+## Please see file perltidy.ERR
             /xn;
 
         if ( $+{name} ) {
@@ -224,9 +243,12 @@ C<cache>.
 Returns I<true> if file has been successully read by L<Pod::Elemental>.
 
 =cut
+
 sub load_file {
     my $this = shift;
     my ( $file, %opts ) = @_;
+
+    $this->log_debug( "Loading file " . $file );
 
     my $doc = Pod::Elemental->read_file($file);
     if ($doc) {
@@ -291,6 +313,7 @@ If a template is missing in the C<cache> then tries to C<load_file()>.
 Returns I<undef> if failed.
 
 =cut
+
 sub get_template {
     my $this = shift;
     my %opts = @_;
@@ -305,7 +328,13 @@ sub get_template {
         $fullName = $this->find_source( $opts{source} );
     }
 
+    $this->log( "Cannot find source file for [" . $opts{source} . "]" )
+      unless defined $fullName;
+
     return undef unless defined $fullName;
+
+    $this->log_debug(
+        "Found file $fullName for source [" . $opts{source} . "]" );
 
     unless ( $template = $this->cache->{$fullName}{ $opts{template} } ) {
         if ( my $doc = $this->load_file( $fullName, %opts ) ) {
@@ -331,5 +360,29 @@ sub init_pod_path {
       ? $this->callerPlugin->pod_path
       : [qw<./lib>];
 }
+
+sub init_logger {
+    my $this = shift;
+
+    my $logger;
+
+    if ( defined $this->callerPlugin ) {
+        $logger = $this->callerPlugin->logger;
+    }
+    else {
+        require Log::Dispatchouli;
+        $logger = Log::Dispatchouli->new(
+            {
+                ident     => '-Include::Finder',
+                to_stdout => 1,
+                log_pid   => 0,
+            }
+        );
+    }
+    return $logger;
+}
+
+__PACKAGE__->meta->make_immutable;
+no Moose;
 
 1;

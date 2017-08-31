@@ -359,6 +359,21 @@ package Pod::Weaver::Plugin::Include::Transformer {
         }
     }
 
+    sub _resetSkipIf {
+        my $this = shift;
+        my $para = shift;
+
+        if ( $this->_skipContent ) {
+            $this->_skipContent(
+                !(
+                    $para->isa('Pod::Elemental::Element::Pod5::Nonpod')
+                    || (   $para->isa('Pod::Elemental::Element::Pod5::Command')
+                        && $para->command eq 'tmpl' )
+                )
+            );
+        }
+    }
+
     sub _process_children {
         my $this = shift;
         my ( $children, %params ) = @_;
@@ -377,6 +392,8 @@ package Pod::Weaver::Plugin::Include::Transformer {
 
         for ( my $i = 0 ; $i < @$children ; $i++ ) {
             my $para = $children->[$i];
+
+            $this->_resetSkipIf($para);
 
             if ( $para->isa('Pod::Elemental::Element::Pod5::Command') ) {
                 $logger->log_debug( ( $curSrc ? "[$curSrc] " : "" )
@@ -436,7 +453,7 @@ package Pod::Weaver::Plugin::Include::Transformer {
                         );
                     }
                     elsif ( $attrs->{hidden} ) {
-                        $this->_skipContent;
+                        $this->_skipContent(1);
                     }
                 }
                 else {
