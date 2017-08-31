@@ -71,9 +71,8 @@ Back reference to a L<Pod::Weaver::Plugin::Include> instance.
 =cut
 
 has callerPlugin => (
-    is      => 'ro',
-    isa     => 'Pod::Weaver::Plugin::Include',
-    handles => [qw<log log_debug log_fatal>],
+    is  => 'ro',
+    isa => 'Pod::Weaver::Plugin::Include',
 );
 
 =attr pod_path
@@ -87,6 +86,13 @@ has pod_path => (
     lazy    => 1,
     isa     => 'ArrayRef[Str]',
     builder => 'init_pod_path',
+);
+
+has logger => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => 'init_logger',
+    handles => [qw<log log_debug log_fatal>],
 );
 
 =privAttr B<_tmplSource, _tmplName, _tmplContent>
@@ -353,6 +359,27 @@ sub init_pod_path {
     return defined $this->callerPlugin
       ? $this->callerPlugin->pod_path
       : [qw<./lib>];
+}
+
+sub init_logger {
+    my $this = shift;
+
+    my $logger;
+
+    if ( defined $this->callerPlugin ) {
+        $logger = $this->callerPlugin->logger;
+    }
+    else {
+        require Log::Dispatchouli;
+        $logger = Log::Dispatchouli->new(
+            {
+                ident     => '-Include::Finder',
+                to_stdout => 1,
+                log_pid   => 0,
+            }
+        );
+    }
+    return $logger;
 }
 
 __PACKAGE__->meta->make_immutable;
