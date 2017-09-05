@@ -1,7 +1,7 @@
 #
 package Pod::Weaver::Plugin::Include::Finder;
 
-our $VERSION = 'v0.1.4';
+our $VERSION = 'v0.1.5';
 
 our $VERSION = 'v0.1.901';
 
