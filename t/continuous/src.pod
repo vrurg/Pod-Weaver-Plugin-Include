@@ -20,7 +20,7 @@ from src.pod
 
 =include nested@level3.pod
 
-=cut
+=tmpl
 
 Some text
 
@@ -34,14 +34,3 @@ So?
 
 bla-bla-bla
 
-=tmpl forNonPod
-
-This
-
-will
-
-end
-
-with =cut
-
-=cut
