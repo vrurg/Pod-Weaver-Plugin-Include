@@ -339,9 +339,9 @@ package Pod::Weaver::Plugin::Include::Transformer {
     sub _add_child {
         my $this = shift;
 
-        $this->logger->log( "Adding a child:",
+        $this->logger->log_debug( "Adding a child:",
             map { $_->as_pod_string } ( ref( $_[0] ) ? $_[0] : [ $_[0] ] ) );
-        $this->logger->log("Skipping the child") if $this->_skipContent;
+        $this->logger->log_debug("Skipping the child") if $this->_skipContent;
 
         return if $this->_skipContent;
 
@@ -372,15 +372,15 @@ package Pod::Weaver::Plugin::Include::Transformer {
         my $this = shift;
         my $para = shift;
 
-        $this->logger->log( "_resetSkipIf for",
+        $this->logger->log_debug( "_resetSkipIf for",
             ref($para), ( $para->can('command') ? $para->command : "" ) );
 
         if ( $this->_skipContent ) {
             $this->_skipContent(0)
               if $para->isa('Pod::Elemental::Element::Pod5::Command')
               && $para->command eq 'tmpl';
-            $this->logger->log( "PARA IS:", ref($para) );
-            $this->logger->log( "Skipping content",
+            $this->logger->log_debug( "PARA IS:", ref($para) );
+            $this->logger->log_debug( "Skipping content",
                 ( $this->_skipContent ? "on" : "off" ) );
         }
     }
