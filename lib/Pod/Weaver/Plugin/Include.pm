@@ -60,6 +60,8 @@ included by a third-party pod:
     
     repeat
     
+    =tmpl
+    
     =cut
     
     1;
@@ -118,6 +120,8 @@ included by a third-party pod:
     
     =include options@mod2opts
     
+    =tmpl
+    
     =cut
     
     1;
@@ -167,9 +171,8 @@ command.
 Template's name must start with either a alpha char or underscore (C<_>) and
 continued with alpha-numeric or underscore.
 
-A template body is terminated either by another C<=tmpl> command or by C<=cut>.
-If C<=tmpl> doesn't have a name defined then it acts as a terminating command
-only. For example:
+A template body is terminated by another C<=tmpl> command. If C<=tmpl> doesn't
+have the name parameter then it acts as a terminating command only. For example:
 
     =head1 SECTION
     
@@ -190,6 +193,8 @@ only. For example:
     =tmpl -tmpl3
     
     Template 3
+    
+    =tmpl
     
     =cut
     
@@ -334,6 +339,10 @@ package Pod::Weaver::Plugin::Include::Transformer {
     sub _add_child {
         my $this = shift;
 
+        $this->logger->log( "Adding a child:",
+            map { $_->as_pod_string } ( ref( $_[0] ) ? $_[0] : [ $_[0] ] ) );
+        $this->logger->log("Skipping the child") if $this->_skipContent;
+
         return if $this->_skipContent;
 
         if ( ref( $_[0] ) eq 'ARRAY' ) {
@@ -363,14 +372,16 @@ package Pod::Weaver::Plugin::Include::Transformer {
         my $this = shift;
         my $para = shift;
 
+        $this->logger->log( "_resetSkipIf for",
+            ref($para), ( $para->can('command') ? $para->command : "" ) );
+
         if ( $this->_skipContent ) {
-            $this->_skipContent(
-                !(
-                    $para->isa('Pod::Elemental::Element::Pod5::Nonpod')
-                    || (   $para->isa('Pod::Elemental::Element::Pod5::Command')
-                        && $para->command eq 'tmpl' )
-                )
-            );
+            $this->_skipContent(0)
+              if $para->isa('Pod::Elemental::Element::Pod5::Command')
+              && $para->command eq 'tmpl';
+            $this->logger->log( "PARA IS:", ref($para) );
+            $this->logger->log( "Skipping content",
+                ( $this->_skipContent ? "on" : "off" ) );
         }
     }
 
@@ -452,8 +463,8 @@ package Pod::Weaver::Plugin::Include::Transformer {
                             "': no valid name found"
                         );
                     }
-                    elsif ( $attrs->{hidden} ) {
-                        $this->_skipContent(1);
+                    else {
+                        $this->_skipContent( $attrs->{hidden} );
                     }
                 }
                 else {

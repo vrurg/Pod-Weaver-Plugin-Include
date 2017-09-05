@@ -286,13 +286,6 @@ sub load_file {
                 }
                 next ELEM;
             }
-            elsif ( $para->isa('Pod::Elemental::Element::Pod5::Nonpod') ) {
-
-                $this->log_debug("Closing template by nonpod node");
-
-                # If current pod segment ended – store template.
-                $this->_store_template;
-            }
             elsif ( defined $this->_tmplName ) {
                 $this->_add2tmpl($para);
             }
