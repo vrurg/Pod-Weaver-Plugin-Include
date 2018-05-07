@@ -250,11 +250,21 @@ use Moose;
 use namespace::autoclean;
 with qw<Pod::Weaver::Role::Dialect Pod::Weaver::Role::Preparer>;
 
+=attr pod_path
+
+List of directories to look for pods in.
+
+=cut
 has pod_path => (
     is      => 'rw',
     builder => 'init_pod_path',
 );
 
+=attr insert_errors
+
+Set to I<true> if some errors are to be included into the output.
+
+=cut
 has insert_errors => (
     is      => 'rw',
     builder => 'init_insert_errors',
@@ -274,6 +284,11 @@ around BUILDARGS => sub {
     return $orig->( $class, @_ );
 };
 
+=method prepare_input
+
+See L<Pod::Weaver::Role::Preparer/"IMPLEMENTING">.
+
+=cut
 sub prepare_input {
     my $this = shift;
     my ($input) = @_;
@@ -281,6 +296,11 @@ sub prepare_input {
     $this->input($input);
 }
 
+=method translate_dialect
+
+See L<Pod::Weaver::Role::Dialect/"IMPLEMENTING">.
+
+=cut
 sub translate_dialect {
     my $this = shift;
     my ($node) = @_;
@@ -289,10 +309,20 @@ sub translate_dialect {
       ->transform_node($node);
 }
 
+=method init_pod_path
+
+Initializer for pod_path attribute.
+
+=cut
 sub init_pod_path {
     return [qw<lib>];
 }
 
+=method init_insert_errors
+
+Initializer for insert_errors attribute.
+
+=cut
 sub init_insert_errors {
     return 0;
 }
