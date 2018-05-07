@@ -356,14 +356,29 @@ sub get_template {
     return $template;
 }
 
+=method init_cache
+
+Initializer for cache attribute.
+
+=cut
 sub init_cache {
     return {};
 }
 
+=method init_maps
+
+Initilizer for maps attribute.
+
+=cut
 sub init_maps {
     return {};
 }
 
+=method init_pod_path
+
+Initializer for pod_path attribute.
+
+=cut
 sub init_pod_path {
     my $this = shift;
 
@@ -372,6 +387,12 @@ sub init_pod_path {
       : [qw<./lib>];
 }
 
+=method init_logger
+
+Initializer for logger attribute. Takes logger object either from
+callerPlugin or creates a new one.
+
+=cut
 sub init_logger {
     my $this = shift;
 
