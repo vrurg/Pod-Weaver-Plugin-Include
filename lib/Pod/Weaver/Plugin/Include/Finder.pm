@@ -229,7 +229,7 @@ sub parse_tmpl {
                 )
                 \s*$
 ## Please see file perltidy.ERR
-            /xn;
+            /x;
 
         if ( $+{name} ) {
             $attrs->{name}   = $+{name};
