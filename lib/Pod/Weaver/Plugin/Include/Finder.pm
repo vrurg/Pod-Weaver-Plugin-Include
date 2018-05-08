@@ -3,8 +3,6 @@ package Pod::Weaver::Plugin::Include::Finder;
 
 our $VERSION = 'v0.1.906';
 
-our $VERSION = 'v0.1.901';
-
 # ABSTRACT: Finds source Pods in .pod files or modules.
 
 =head1 SYNOPSIS
